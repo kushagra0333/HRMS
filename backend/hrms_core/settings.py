@@ -80,7 +80,7 @@ ROOT_URLCONF = 'hrms_core.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [BASE_DIR / 'react_build'],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -146,6 +146,12 @@ USE_TZ = True
 
 STATIC_URL = 'static/'
 STATIC_ROOT = BASE_DIR / 'staticfiles'
+
+REACT_BUILD_DIR = BASE_DIR / 'react_build'
+
+STATICFILES_DIRS = [
+    REACT_BUILD_DIR / 'static',
+]
 
 CORS_ALLOW_ALL_ORIGINS = True
 
