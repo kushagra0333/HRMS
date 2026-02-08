@@ -9,3 +9,4 @@ pymongo==3.12.3
 pytz
 gunicorn==21.2.0
 whitenoise==6.6.0
+setuptools
