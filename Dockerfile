@@ -21,6 +21,9 @@ COPY backend/ ./
 # Ensure the destination matches where Django looks for static files/templates
 COPY --from=build-stage /app/frontend/build ./react_build
 
+# Run collectstatic to prepare files for WhiteNoise
+RUN python manage.py collectstatic --no-input
+
 # Gunicorn will start the app
 # The bind address 0.0.0.0 is crucial for Docker
 CMD ["gunicorn", "hrms_core.wsgi:application", "--bind", "0.0.0.0:10000"]
