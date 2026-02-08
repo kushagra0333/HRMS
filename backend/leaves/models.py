@@ -1,7 +1,8 @@
-from django.db import models
+from djongo import models
 from employees.models import Employee
 
 class Leave(models.Model):
+    _id = models.ObjectIdField()
     STATUS_CHOICES = [
         ('Pending', 'Pending'),
         ('Approved', 'Approved'),

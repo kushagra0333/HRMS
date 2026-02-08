@@ -40,6 +40,18 @@ export default function Employees() {
     }
   };
 
+  const handleDelete = async (id) => {
+    if (window.confirm("Are you sure you want to delete this employee?")) {
+        try {
+            await api.delete(`${endpoints.employees}${id}/`);
+            fetchEmployees();
+        } catch (error) {
+            console.error("Failed to delete employee", error);
+            alert("Failed to delete employee");
+        }
+    }
+  };
+
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
@@ -103,7 +115,7 @@ export default function Employees() {
                   </td>
                   <td className="px-6 py-4">{new Date(emp.created_at).toLocaleDateString()}</td>
                   <td className="px-6 py-4 text-right">
-                    <button className="text-red-500 hover:bg-red-50 p-1 rounded">
+                    <button onClick={() => handleDelete(emp.employee_id)} className="text-red-500 hover:bg-red-50 p-1 rounded">
                         <Trash2 className="w-4 h-4" />
                     </button>
                   </td>

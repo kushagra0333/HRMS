@@ -15,6 +15,7 @@ export default function Leaves() {
   const fetchLeaves = async () => {
     try {
       const response = await api.get("/leaves/");
+      console.log("Leaves Data:", response.data);
       setLeaves(response.data);
     } catch (error) {
       console.error("Failed to fetch leaves", error);
@@ -39,11 +40,29 @@ export default function Leaves() {
     }
   };
 
-  const handleAction = async (id, action) => {
+  const handleAction = async (leave, action) => {
+      const id = (leave.id && leave.id !== 'None') ? leave.id : leave._id;
+      if (!id) {
+          console.error("Invalid leave ID:", leave);
+          alert("Error: Invalid leave ID. Please check console.");
+          return;
+      }
+
+      // Optimistic update
+      const originalLeaves = [...leaves];
+      const newStatus = action === 'approve' ? 'Approved' : 'Rejected';
+      
+      setLeaves(leaves.map(l => 
+          (l.id === id || l._id === id) ? { ...l, status: newStatus } : l
+      ));
+
       try {
           await api.patch(`/leaves/${id}/${action}/`);
-          fetchLeaves();
+          // Optional: re-fetch to ensure consistency, but optimistic update makes it feel instant
+          fetchLeaves(); 
       } catch (error) {
+          // Revert on failure
+          setLeaves(originalLeaves);
           alert(`Failed to ${action} leave`);
       }
   };
@@ -112,8 +131,8 @@ export default function Leaves() {
                        {/* Ideally check if user is admin. For now, show buttons if Pending and let backend reject if unauthorized */}
                        {leave.status === 'Pending' && (
                            <>
-                               <button onClick={() => handleAction(leave.id, 'approve')} className="text-green-600 hover:text-green-800 font-medium text-xs">Approve</button>
-                               <button onClick={() => handleAction(leave.id, 'reject')} className="text-red-600 hover:text-red-800 font-medium text-xs">Reject</button>
+                               <button onClick={() => handleAction(leave, 'approve')} className="text-green-600 hover:text-green-800 font-medium text-xs">Approve</button>
+                               <button onClick={() => handleAction(leave, 'reject')} className="text-red-600 hover:text-red-800 font-medium text-xs">Reject</button>
                            </>
                        )}
                   </td>

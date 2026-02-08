@@ -3,6 +3,9 @@ from .models import Attendance
 from .serializers import AttendanceSerializer
 from employees.models import Employee
 
+from django.db import IntegrityError, DatabaseError
+from pymongo.errors import BulkWriteError
+
 class AttendanceViewSet(viewsets.ModelViewSet):
     serializer_class = AttendanceSerializer
     permission_classes = [permissions.IsAuthenticated]
@@ -21,3 +24,5 @@ class AttendanceViewSet(viewsets.ModelViewSet):
            serializer.save(employee=self.request.user.employee)
         except Employee.DoesNotExist:
             raise serializers.ValidationError("User is not linked to an Employee profile.")
+        except (IntegrityError, BulkWriteError, DatabaseError):
+            raise serializers.ValidationError("Attendance already marked for this date.")
