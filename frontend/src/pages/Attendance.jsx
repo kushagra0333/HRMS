@@ -123,6 +123,7 @@ export default function Attendance() {
                 <div className="p-4 border-b">
                     <h2 className="text-lg font-bold">Recent Records</h2>
                 </div>
+                <div className="overflow-x-auto">
                 <table className="w-full text-left text-sm text-gray-600">
                     <thead className="bg-gray-50 border-b text-xs uppercase font-medium text-gray-500">
                         <tr>
@@ -165,6 +166,7 @@ export default function Attendance() {
                         )}
                     </tbody>
                 </table>
+                </div>
             </div>
       </div>
     </div>

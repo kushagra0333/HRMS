@@ -97,12 +97,12 @@ export default function Dashboard() {
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
             <h1 className="text-2xl font-bold text-gray-900">Dashboard</h1>
             <p className="text-gray-500">Welcome back, {user?.username}</p>
         </div>
-        <div className="text-sm text-gray-500 bg-white px-4 py-2 rounded-lg border shadow-sm">
+        <div className="text-sm text-gray-500 bg-white px-4 py-2 rounded-lg border shadow-sm w-fit">
             {new Date().toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}
         </div>
       </div>

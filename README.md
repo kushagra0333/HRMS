@@ -1,82 +1,210 @@
-# HRMS
+# HRMS - Human Resource Management System
 
-This is a Human Resource Management System (HRMS) built with Django (Backend) and React (Frontend).
+A comprehensive and modern Human Resource Management System (HRMS) designed to streamline employee management, attendance tracking, and leave management processes. Built with a robust **Django** backend and a responsive **React** frontend, this application offers a seamless experience for both administrators and employees.
 
-## Prerequisites
+## 🚀 Key Features
 
-- Python 3.12+
-- Node.js 18+
-- MongoDB
+### 🔐 Authentication & Security
 
-## Setup Instructions
+- **Secure Login/Register**: JWT-based authentication using `djangorestframework-simplejwt`.
+- **Role-Based Access**: Separation of concerns between Admin and Employee roles.
+- **Protected Routes**: Frontend routes secured ensuring only authenticated users can access sensitive data.
 
-### Backend
+### 👥 Employee Management
 
-1.  Navigate to the `backend` directory:
+- **Centralized Database**: Store and manage comprehensive employee records.
+- **CRUD Operations**: Admins can easily Add, View, and Delete employee profiles.
+- **Search Functionality**: Quickly find employees by name or ID.
 
-    ```bash
-    cd backend
-    ```
+### 📅 Attendance Tracking
 
-2.  Create a virtual environment:
+- **Daily Marking**: Simple interface for marking daily attendance (Present/Absent).
+- **History View**: Employees can view their own attendance history.
+- **Admin Overview**: Admins get a daily summary of workforce presence.
 
-    ```bash
-    python -m venv venv
-    source venv/bin/activate  # On Windows: venv\Scripts\activate
-    ```
+### 🏖️ Leave Management
 
-3.  Install dependencies:
+- **Digital Applications**: Employees can apply for leaves with reasons and dates.
+- **Status Tracking**: Real-time updates on leave status (Pending ⏳, Approved ✅, Rejected ❌).
+- **Approval Workflow**: Admins can review pending leave requests and approve/reject them instantly.
 
-    ```bash
-    pip install -r requirements.txt
-    ```
+### 📊 Interactive Dashboard
 
-    (Note: `pymongo[srv]` is included for MongoDB Atlas support).
+- **Real-time Stats**: Instant view of Total Employees, Present Today, Pending Leaves, and more.
+- **Personalized View**: Employees see their own stats, while Admins see organization-wide metrics.
 
-4.  Set up environment variables:
-    - Create a `.env` file in `backend/` or ensure `hrms_core/settings.py` has the correct `MONGODB_URL`.
-    - Example `.env`:
-      ```
-      MONGODB_URL=mongodb://localhost:27017/hrms_db
-      SECRET_KEY=your_secret_key
-      DEBUG=True
-      ```
+### 📱 Fully Responsive Design
 
-5.  Apply migrations:
+- **Mobile-First Approach**: Optimized for all screen sizes (Mobile, Tablet, Desktop).
+- **Collapsible Sidebar**: Smooth navigation on smaller screens with a mobile-friendly menu.
+- **Adaptive Tables**: Data tables that scroll horizontally on mobile devices without breaking layout.
 
-    ```bash
-    python manage.py migrate
-    ```
+---
 
-6.  Run the server:
-    ```bash
-    python manage.py runserver
-    ```
-    The backend will run at `http://127.0.0.1:8000/`.
+## 🛠️ Tech Stack
 
 ### Frontend
 
-1.  Navigate to the `frontend` directory:
+- **React.js**: Component-based UI library.
+- **Tailwind CSS**: Utility-first CSS framework for rapid and responsive styling.
+- **Lucide React**: Beautiful and consistent icons.
+- **Axios**: Promise-based HTTP client for API requests.
+- **React Router DOM**: Declarative routing for Single Page Applications (SPA).
 
-    ```bash
-    cd frontend
-    ```
+### Backend
 
-2.  Install dependencies:
+- **Django**: High-level Python web framework.
+- **Django REST Framework (DRF)**: Powerful toolkit for building Web APIs.
+- **MongoDB**: NoSQL database (integrated via `djongo`).
+- **Simple JWT**: JSON Web Token authentication for Django REST Framework.
+- **Gunicorn** & **WhiteNoise**: Production-grade server and static file management.
 
-    ```bash
-    npm install
-    ```
+### DevOps & Tools
 
-3.  Start the development server:
-    ```bash
-    npm start
-    ```
-    The frontend will run at `http://localhost:3000/`.
+- **Docker**: Containerization for consistent development and deployment environments.
+- **Git**: Version control.
 
-## Deployment
+---
 
-To deploy separately:
+## 📂 Project Structure
 
-- **Backend:** accurate Python environment and `gunicorn` (e.g., on Render, Heroku).
-- **Frontend:** Build the static files using `npm run build` and serve them (e.g., on Vercel, Netlify).
+```bash
+HRMS/
+├── backend/                # Django Backend
+│   ├── hrms_core/          # Project settings and configuration
+│   ├── employees/          # Employee management app
+│   ├── attendance/         # Attendance tracking app
+│   ├── leaves/             # Leave management app
+│   ├── requirements.txt    # Python dependencies
+│   ├── manage.py           # Django management script
+│   └── Dockerfile          # Backend Dockerfile
+│
+├── frontend/               # React Frontend
+│   ├── src/
+│   │   ├── components/     # Reusable UI components (Layout, UI)
+│   │   ├── pages/          # Page components (Dashboard, Employees, etc.)
+│   │   ├── context/        # Global state (AuthContext)
+│   │   ├── services/       # API configuration
+│   │   └── App.js          # Main application component
+│   ├── package.json        # Node dependencies
+│   └── tailwind.config.js  # Tailwind configuration
+│
+└── docker-compose.yml      # Orchestration for multi-container Docker app
+```
+
+---
+
+## 🚀 Getting Started
+
+### Prerequisites
+
+- **Node.js** (v16 or higher)
+- **Python** (v3.8 or higher)
+- **MongoDB** (Local instance or Atlas URI)
+- **Docker** (Optional, for containerized setup)
+
+### Option 1: Local Development Setup
+
+#### 1. Backend Setup
+
+Navigate to the backend directory and set up the virtual environment.
+
+```bash
+cd backend
+python -m venv venv
+# Activate virtual environment
+# Windows:
+venv\Scripts\activate
+# Linux/Mac:
+source venv/bin/activate
+```
+
+Install dependencies:
+
+```bash
+pip install -r requirements.txt
+```
+
+Configure Environment Variables:
+Create a `.env` file in the `backend/` directory:
+
+```env
+DEBUG=True
+SECRET_KEY=your-secret-key-here
+MONGODB_URL=mongodb://localhost:27017/hrms_db
+ALLOWED_HOSTS=*
+```
+
+Run Migrations and Start Server:
+
+```bash
+python manage.py migrate
+python manage.py runserver
+```
+
+The backend will run at `http://localhost:8000`.
+
+#### 2. Frontend Setup
+
+Open a new terminal and navigate to the frontend directory.
+
+```bash
+cd frontend
+npm install
+```
+
+Start the React Development Server:
+
+```bash
+npm start
+```
+
+The frontend will run at `http://localhost:3000`.
+
+---
+
+### Option 2: Docker Setup (Recommended for Deployment)
+
+Ensure Docker and Docker Compose are installed.
+
+1. **Build and Run Containers**:
+
+   ```bash
+   docker-compose up --build
+   ```
+
+2. **Access the Application**:
+   - Frontend: `http://localhost:3000`
+   - Backend API: `http://localhost:8000`
+
+---
+
+## 📡 API Endpoints
+
+| Method         | Endpoint                    | Description                    |
+| :------------- | :-------------------------- | :----------------------------- |
+| **Auth**       |                             |                                |
+| `POST`         | `/api/token/`               | Obtain Access & Refresh Tokens |
+| `POST`         | `/api/token/refresh/`       | Refresh Access Token           |
+| **Employees**  |                             |                                |
+| `GET`          | `/api/employees/`           | List all employees             |
+| `POST`         | `/api/employees/`           | Create a new employee          |
+| `DELETE`       | `/api/employees/{id}/`      | Delete an employee             |
+| **Attendance** |                             |                                |
+| `GET`          | `/api/attendance/`          | List attendance records        |
+| `POST`         | `/api/attendance/`          | Mark attendance                |
+| **Leaves**     |                             |                                |
+| `GET`          | `/api/leaves/`              | List leave requests            |
+| `POST`         | `/api/leaves/`              | Apply for leave                |
+| `PATCH`        | `/api/leaves/{id}/approve/` | Approve a leave request        |
+| `PATCH`        | `/api/leaves/{id}/reject/`  | Reject a leave request         |
+
+---
+
+## 🤝 Contributing
+
+Contributions are welcome! Please fork the repository and create a pull request for any feature enhancements or bug fixes.
+
+## 📄 License
+
+This project is open-source and available under the [MIT License](LICENSE).

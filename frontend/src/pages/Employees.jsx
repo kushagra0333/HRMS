@@ -54,14 +54,14 @@ export default function Employees() {
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
           <h1 className="text-2xl font-bold text-gray-900">Employees</h1>
           <p className="text-gray-500">Manage your workforce</p>
         </div>
         <button
           onClick={() => setShowModal(true)}
-          className="bg-blue-600 text-white px-4 py-2 rounded-lg flex items-center gap-2 hover:bg-blue-700 transition"
+          className="bg-blue-600 text-white px-4 py-2 rounded-lg flex items-center gap-2 hover:bg-blue-700 transition w-full md:w-auto justify-center"
         >
           <Plus className="w-4 h-4" />
           Add Employee
@@ -80,6 +80,7 @@ export default function Employees() {
             </div>
         </div>
         
+        <div className="overflow-x-auto">
         <table className="w-full text-left text-sm text-gray-600">
           <thead className="bg-gray-50 border-b text-xs uppercase font-medium text-gray-500">
             <tr>
@@ -124,6 +125,7 @@ export default function Employees() {
             )}
           </tbody>
         </table>
+        </div>
       </div>
 
       {showModal && (

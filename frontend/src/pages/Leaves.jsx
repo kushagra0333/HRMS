@@ -69,14 +69,14 @@ export default function Leaves() {
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
           <h1 className="text-2xl font-bold text-gray-900">Leaves</h1>
           <p className="text-gray-500">Manage leave applications</p>
         </div>
         <button
           onClick={() => setShowModal(true)}
-          className="bg-blue-600 text-white px-4 py-2 rounded-lg flex items-center gap-2 hover:bg-blue-700 transition"
+          className="bg-blue-600 text-white px-4 py-2 rounded-lg flex items-center gap-2 hover:bg-blue-700 transition w-full md:w-auto justify-center"
         >
           <Calendar className="w-4 h-4" />
           Apply for Leave
@@ -84,6 +84,7 @@ export default function Leaves() {
       </div>
 
       <div className="bg-white rounded-xl shadow-sm border overflow-hidden">
+        <div className="overflow-x-auto">
         <table className="w-full text-left text-sm text-gray-600">
           <thead className="bg-gray-50 border-b text-xs uppercase font-medium text-gray-500">
             <tr>
@@ -141,6 +142,7 @@ export default function Leaves() {
             )}
           </tbody>
         </table>
+        </div>
       </div>
 
       {showModal && (
@@ -148,7 +150,7 @@ export default function Leaves() {
           <div className="bg-white p-6 rounded-xl shadow-lg w-full max-w-md">
             <h2 className="text-xl font-bold mb-4">Apply for Leave</h2>
             <form onSubmit={handleSubmit} className="space-y-4">
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
                     <label className="block text-sm font-medium text-gray-700 mb-1">Start Date</label>
                     <input
