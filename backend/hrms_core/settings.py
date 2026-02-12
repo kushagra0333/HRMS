@@ -10,14 +10,25 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/6.0/ref/settings/
 """
 
+# pathlib provides an object-oriented filesystem path interface.
+# We use it to construct paths to files and directories (like the database file or templates).
 from pathlib import Path
+
+# django-environ allows us to read configuration variables from a .env file.
+# This is crucial for keeping secrets (like database passwords) out of the code.
 import environ
+
+# os usage is minimal here but sometimes needed for system-level operations.
 import os
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
+# BASE_DIR is the root folder of your project (where manage.py lives).
+# __file__ is the path to settings.py. .resolve().parent.parent goes up two levels.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
+# Initialize environment variables.
 env = environ.Env()
+# Read the .env file located at the BASE_DIR.
 environ.Env.read_env(BASE_DIR / '.env')
 
 
@@ -25,14 +36,20 @@ environ.Env.read_env(BASE_DIR / '.env')
 # See https://docs.djangoproject.com/en/6.0/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
+# This key is used for cryptographic signing. It should be unique and kept secret.
 SECRET_KEY = 'django-insecure-r4dp%tuf$b*)=icbxtv_a91!%az7^jr!k8gy-&pl%c8@9faiml'
 
 # SECURITY WARNING: don't run with debug turned on in production!
+# When DEBUG is True, Django shows detailed error pages. This is great for development
+# but bad for production (security risk). We read this from the .env file.
 DEBUG = env.bool('DEBUG', default=False)
 
+# ALLOWED_HOSTS is a list of strings representing the host/domain names that this Django site can serve.
+# This is a security measure to prevent HTTP Host header attacks.
 ALLOWED_HOSTS = env.list('ALLOWED_HOSTS', default=['*'])
 
-# Render.com specific setting to allow the external hostname
+# Render.com specific setting. When deploying to Render, the hostname is provided in an environment variable.
+# We add it to ALLOWED_HOSTS so the app works on Render.
 RENDER_EXTERNAL_HOSTNAME = os.environ.get('RENDER_EXTERNAL_HOSTNAME')
 if RENDER_EXTERNAL_HOSTNAME:
     ALLOWED_HOSTS.append(RENDER_EXTERNAL_HOSTNAME)
@@ -40,76 +57,96 @@ if RENDER_EXTERNAL_HOSTNAME:
 
 # Application definition
 
+# INSTALLED_APPS lists all the Django applications that are active in this Django instance.
+# Apps are pluggable components.
 INSTALLED_APPS = [
-    'django.contrib.admin',
-    'django.contrib.auth',
-    'django.contrib.contenttypes',
-    'django.contrib.sessions',
-    'django.contrib.messages',
-    'django.contrib.staticfiles',
-    'rest_framework',
-    'corsheaders',
-    'employees',
-    'attendance',
-    'leaves',
+    'django.contrib.admin',          # The admin site (http://localhost:8000/admin/)
+    'django.contrib.auth',           # The authentication system (Users, Groups, Permissions)
+    'django.contrib.contenttypes',   # A framework for hooking into "types" of content (used by auth/admin)
+    'django.contrib.sessions',       # Support for sessions (storing data across requests for a user)
+    'django.contrib.messages',       # Moving messages (like "Saved successfully") between requests
+    'django.contrib.staticfiles',    # Managing static files (CSS, images)
+    
+    # Third-party apps
+    'rest_framework',                # Django Rest Framework: toolkit for building Web APIs
+    'corsheaders',                   # django-cors-headers: allows frontend (React) to talk to backend (different port)
+    
+    # Local apps (your custom features)
+    'employees',                     # Employee management feature
+    'attendance',                    # Attendance tracking feature
+    'leaves',                        # Leave management feature
 ]
 
+# Configuration for Django Rest Framework (DRF)
 REST_FRAMEWORK = {
+    # Default authentication classes determine how users identify themselves for API requests.
     'DEFAULT_AUTHENTICATION_CLASSES': (
-        'rest_framework_simplejwt.authentication.JWTAuthentication',
+        'rest_framework_simplejwt.authentication.JWTAuthentication', # Uses JSON Web Tokens (access/refresh tokens)
     ),
+    # Default permission classes determine who can access the API.
+    # IsAuthenticated means all endpoints are protected by default (require login).
     'DEFAULT_PERMISSION_CLASSES': (
         'rest_framework.permissions.IsAuthenticated',
     ),
 }
 
+# Configuration for Simple JWT (JSON Web Token) settings.
 from datetime import timedelta
 SIMPLE_JWT = {
-    'ACCESS_TOKEN_LIFETIME': timedelta(days=1),
-    'REFRESH_TOKEN_LIFETIME': timedelta(days=7),
+    'ACCESS_TOKEN_LIFETIME': timedelta(days=1),     # Access token expires in 1 day
+    'REFRESH_TOKEN_LIFETIME': timedelta(days=7),    # Refresh token (used to get new access token) expires in 7 days
 }
 
+# Middleware is a framework of hooks into Django's request/response processing.
+# It's a light, low-level architecture for globally altering Django's input or output.
 MIDDLEWARE = [
-    'corsheaders.middleware.CorsMiddleware',
-    'django.middleware.security.SecurityMiddleware',
-    'whitenoise.middleware.WhiteNoiseMiddleware',
-    'django.contrib.sessions.middleware.SessionMiddleware',
-    'django.middleware.common.CommonMiddleware',
-    'django.middleware.csrf.CsrfViewMiddleware',
-    'django.contrib.auth.middleware.AuthenticationMiddleware',
-    'django.contrib.messages.middleware.MessageMiddleware',
-    'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'corsheaders.middleware.CorsMiddleware',                   # Adds CORS headers to responses (must be high up)
+    'django.middleware.security.SecurityMiddleware',           # Security enhancements (SSL, XSS protection)
+    'whitenoise.middleware.WhiteNoiseMiddleware',              # Serves static files efficiently in production
+    'django.contrib.sessions.middleware.SessionMiddleware',    # Manages sessions across requests
+    'django.middleware.common.CommonMiddleware',               # Common conveniences (e.g. forbidding access to certain user agents)
+    'django.middleware.csrf.CsrfViewMiddleware',               # Cross Site Request Forgery protection (security)
+    'django.contrib.auth.middleware.AuthenticationMiddleware', # Associates users with requests using sessions
+    'django.contrib.messages.middleware.MessageMiddleware',    # Enables message framework
+    'django.middleware.clickjacking.XFrameOptionsMiddleware',  # Protection against clickjacking
 ]
 
+# The Python module where the main URL configuration is defined.
 ROOT_URLCONF = 'hrms_core.urls'
 
+# Configuration for the template engine.
+# Django templates are used to generate HTML dynamically.
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [BASE_DIR / 'react_build'],
-        'APP_DIRS': True,
+        'DIRS': [BASE_DIR / 'react_build'], # Tell Django to look for templates in the react_build folder (for index.html)
+        'APP_DIRS': True,                   # Look for templates inside each installed app's 'templates' directory
         'OPTIONS': {
             'context_processors': [
                 'django.template.context_processors.request',
-                'django.contrib.auth.context_processors.auth',
-                'django.contrib.messages.context_processors.messages',
+                'django.contrib.auth.context_processors.auth',   # Adds 'user' and 'perms' variables to templates
+                'django.contrib.messages.context_processors.messages', # Adds 'messages' variable to templates
             ],
         },
     },
 ]
 
+# The WSGI application object that WSGI servers (like Gunicorn) use to communicate with your code.
 WSGI_APPLICATION = 'hrms_core.wsgi.application'
 
 
 # Database
 # https://docs.djangoproject.com/en/6.0/ref/settings/#databases
 
+# Here we configure the database connection.
+# We are using MongoDB via 'djongo' engine instead of the default SQLite or PostgreSQL.
 DATABASES = {
     'default': {
-        'ENGINE': 'djongo',
-        'NAME': 'hrms_db',
-        'ENFORCE_SCHEMA': False,
+        'ENGINE': 'djongo',             # The database backend to use
+        'NAME': 'hrms_db',              # Name of the database to create/connect to
+        'ENFORCE_SCHEMA': False,        # MongoDB is schema-less, so we disable strict schema enforcement
         'CLIENT': {
+            # Connection string for MongoDB (read from env or default to localhost)
             'host': env('MONGODB_URL', default='mongodb://localhost:27017/hrms_db')
         }
     }
@@ -118,7 +155,7 @@ DATABASES = {
 
 # Password validation
 # https://docs.djangoproject.com/en/6.0/ref/settings/#auth-password-validators
-
+# These validators check password strength (e.g., minimum length, not too common, etc.)
 AUTH_PASSWORD_VALIDATORS = [
     {
         'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',
@@ -138,35 +175,46 @@ AUTH_PASSWORD_VALIDATORS = [
 # Internationalization
 # https://docs.djangoproject.com/en/6.0/topics/i18n/
 
-LANGUAGE_CODE = 'en-us'
+LANGUAGE_CODE = 'en-us' # Default language for the site
 
-TIME_ZONE = 'UTC'
+TIME_ZONE = 'UTC'       # Default time zone (should usually be UTC for backend storage)
 
-USE_I18N = True
+USE_I18N = True         # Activate Django's translation system
 
-USE_TZ = True
+USE_TZ = True           # Activate timezone support (store dates in UTC, convert to local time in templates)
 
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/6.0/howto/static-files/
 
-STATIC_URL = '/static/'
-STATIC_ROOT = BASE_DIR / 'staticfiles'
+STATIC_URL = '/static/'  # The URL prefix for static files (e.g. http://site.com/static/style.css)
+STATIC_ROOT = BASE_DIR / 'staticfiles' # Directory where 'collectstatic' will gather files for deployment
 
+# Storage backend for static files. CompressedManifestStaticFilesStorage adds a unique hash to filenames
+# which helps with browser caching (cache busting).
 STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
+# Path to the build directory of the React frontend
 REACT_BUILD_DIR = BASE_DIR / 'react_build'
 
+# Additional locations of static files (besides those in apps)
 STATICFILES_DIRS = [
-    REACT_BUILD_DIR / 'static',
+    REACT_BUILD_DIR / 'static', # Where React puts its built static assets (js/css chunks)
 ]
 
+# CORS (Cross-Origin Resource Sharing) settings
+# If True, allows ANY site to make requests to your API.
+# In production, this should be restricted to your frontend domain.
 CORS_ALLOW_ALL_ORIGINS = True
 
 from corsheaders.defaults import default_headers
 
+# List of HTTP headers allowed in CORS requests.
+# We append 'authorization' to allow sending the JWT token in the header.
 CORS_ALLOW_HEADERS = list(default_headers) + [
     'authorization',
 ]
 
+# Default primary key field type
+# BigAutoField is a 64-bit integer, good for large tables.
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
