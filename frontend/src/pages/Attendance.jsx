@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import api, { endpoints } from "../services/api";
 import { CalendarCheck, CheckCircle, XCircle } from "lucide-react";
+import { useAuth } from "../context/AuthContext";
 
 export default function Attendance() {
   const [attendance, setAttendance] = useState([]);
@@ -12,11 +13,14 @@ export default function Attendance() {
     status: "Present",
   });
 
+  const { user } = useAuth();
+  const isAdmin = user?.role === 'admin';
+
   const fetchData = async () => {
     try {
       const [attRes, empRes] = await Promise.all([
         api.get(endpoints.attendance),
-        api.get(endpoints.employees),
+        isAdmin ? api.get(endpoints.employees) : Promise.resolve({ data: [] }),
       ]);
       setAttendance(attRes.data);
       setEmployees(empRes.data);
@@ -29,16 +33,17 @@ export default function Attendance() {
 
   useEffect(() => {
     fetchData();
-  }, []);
+  }, [isAdmin]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      await api.post(endpoints.attendance, formData);
+      const payload = isAdmin ? formData : { date: formData.date, status: formData.status };
+      await api.post(endpoints.attendance, payload);
       alert("Attendance marked successfully!");
       fetchData();
     } catch (error) {
-      alert("Failed to mark attendance: " + (error.response?.data?.non_field_errors || error.message));
+      alert("Failed to mark attendance: " + (error.response?.data?.[0] || error.message));
     }
   };
 
@@ -47,34 +52,36 @@ export default function Attendance() {
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-bold text-gray-900">Attendance</h1>
-          <p className="text-gray-500">Track employee presence</p>
+          <p className="text-gray-500">{isAdmin ? 'Track company attendance' : 'Your attendance history'}</p>
         </div>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             {/* Mark Attendance Form */}
             <div className="bg-white p-6 rounded-xl shadow-sm border h-fit">
-                <h2 className="text-lg font-bold mb-4 flex items-center gap-2">
+                <h2 className="text-lg font-bold mb-4 flex items-center gap-2 text-gray-800">
                     <CalendarCheck className="w-5 h-5 text-blue-600" />
-                    Mark Attendance
+                    {isAdmin ? 'Mark Attendance' : 'Self Check-in'}
                 </h2>
                 <form onSubmit={handleSubmit} className="space-y-4">
-                    <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">Employee</label>
-                        <select 
-                            required
-                            className="w-full p-2 border rounded-lg bg-white"
-                            value={formData.employee}
-                            onChange={(e) => setFormData({...formData, employee: e.target.value})}
-                        >
-                            <option value="">Select Employee</option>
-                            {employees.map(emp => (
-                                <option key={emp.id} value={emp.employee_id}>
-                                    {emp.name} ({emp.employee_id})
-                                </option>
-                            ))}
-                        </select>
-                    </div>
+                    {isAdmin && (
+                        <div>
+                            <label className="block text-sm font-medium text-gray-700 mb-1">Employee</label>
+                            <select 
+                                required
+                                className="w-full p-2 border rounded-lg bg-white"
+                                value={formData.employee}
+                                onChange={(e) => setFormData({...formData, employee: e.target.value})}
+                            >
+                                <option value="">Select Employee</option>
+                                {employees.map(emp => (
+                                    <option key={emp.id} value={emp.employee_id}>
+                                        {emp.name} ({emp.employee_id})
+                                    </option>
+                                ))}
+                            </select>
+                        </div>
+                    )}
                     <div>
                         <label className="block text-sm font-medium text-gray-700 mb-1">Date</label>
                         <input 

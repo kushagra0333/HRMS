@@ -16,22 +16,25 @@ class AttendanceViewSet(viewsets.ModelViewSet):
     # Employees see only their own records.
     def get_queryset(self):
         user = self.request.user
-        if user.is_staff:
-            return Attendance.objects.all().order_by('-date')
         try:
-            return Attendance.objects.filter(employee=user.employee).order_by('-date')
-        except Employee.DoesNotExist:
+            employee = user.employee
+            if employee.role == 'admin':
+                return Attendance.objects.all().order_by('-date')
+            return Attendance.objects.filter(employee=employee).order_by('-date')
+        except AttributeError:
             return Attendance.objects.none()
 
-    # Custom Creation Logic:
-    # When creating an attendance record, we automatically link it to the current user's employee profile.
     def perform_create(self, serializer):
+        user = self.request.user
         try:
-           serializer.save(employee=self.request.user.employee)
-        except Employee.DoesNotExist:
-            # Prevent users without employee profiles from marking attendance.
+            employee = user.employee
+            if employee.role == 'admin' and 'employee' in self.request.data:
+                # Admin can specify employee ID
+                serializer.save()
+            else:
+                # Others (or admin not specifying) default to self
+                serializer.save(employee=employee)
+        except AttributeError:
             raise serializers.ValidationError("User is not linked to an Employee profile.")
         except (IntegrityError, BulkWriteError, DatabaseError):
-            # This catches the 'unique_together' constraint violation from the model
-            # (i.e., if they already marked attendance for today).
             raise serializers.ValidationError("Attendance already marked for this date.")

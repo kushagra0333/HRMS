@@ -1,8 +1,11 @@
 import { useEffect, useState } from "react";
 import api, { endpoints } from "../services/api";
-import { Plus, Search, Trash2, User } from "lucide-react";
+import { Plus, Search, Trash2, User, ShieldAlert } from "lucide-react";
+import { useAuth } from "../context/AuthContext";
 
 export default function Employees() {
+  const { user } = useAuth();
+  const isAdmin = user?.role === 'admin';
   const [employees, setEmployees] = useState([]);
   const [loading, setLoading] = useState(true);
   const [showModal, setShowModal] = useState(false);
@@ -25,8 +28,8 @@ export default function Employees() {
   };
 
   useEffect(() => {
-    fetchEmployees();
-  }, []);
+    if (isAdmin) fetchEmployees();
+  }, [isAdmin]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -51,6 +54,19 @@ export default function Employees() {
         }
     }
   };
+
+  if (!isAdmin) {
+    return (
+        <div className="flex flex-col items-center justify-center h-[60vh] text-center space-y-4">
+            <ShieldAlert className="w-16 h-16 text-amber-500" />
+            <h2 className="text-2xl font-bold text-gray-800">Access Denied</h2>
+            <p className="text-gray-500 max-w-md">
+                Only administrators can manage the employee directory. 
+                Please contact your HR department for any personnel changes.
+            </p>
+        </div>
+    );
+  }
 
   return (
     <div className="space-y-6">

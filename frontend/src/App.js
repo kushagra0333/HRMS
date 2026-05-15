@@ -5,17 +5,24 @@ import Dashboard from "./pages/Dashboard";
 import Employees from "./pages/Employees";
 import Attendance from "./pages/Attendance";
 import Leaves from "./pages/Leaves";
+import Projects from "./pages/Projects";
+import Tasks from "./pages/Tasks";
+import TaskDetails from "./pages/TaskDetails";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
 import { AuthProvider, useAuth } from "./context/AuthContext";
 import { Menu } from "lucide-react";
 
-const ProtectedRoute = ({ children }) => {
+const ProtectedRoute = ({ children, adminOnly = false }) => {
   const { user, loading } = useAuth();
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
   if (loading) return <div>Loading...</div>;
   if (!user) return <Navigate to="/login" />;
+  
+  if (adminOnly && user.role !== 'admin') {
+    return <Navigate to="/" />;
+  }
   
   return (
     <div className="flex min-h-screen w-screen bg-amber-50 relative">
@@ -58,8 +65,23 @@ export default function App() {
             </ProtectedRoute>
           } />
           <Route path="/employees" element={
-            <ProtectedRoute>
+            <ProtectedRoute adminOnly={true}>
               <Employees />
+            </ProtectedRoute>
+          } />
+          <Route path="/projects" element={
+            <ProtectedRoute>
+              <Projects />
+            </ProtectedRoute>
+          } />
+          <Route path="/tasks" element={
+            <ProtectedRoute>
+              <Tasks />
+            </ProtectedRoute>
+          } />
+          <Route path="/tasks/:id" element={
+            <ProtectedRoute>
+              <TaskDetails />
             </ProtectedRoute>
           } />
           <Route path="/attendance" element={

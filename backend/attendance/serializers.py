@@ -8,7 +8,8 @@ class AttendanceSerializer(serializers.ModelSerializer):
     # When reading, it shows the employee_id. When writing, it expects an employee_id to find the object.
     employee = serializers.SlugRelatedField(
         slug_field='employee_id',
-        queryset=Employee.objects.all()
+        queryset=Employee.objects.all(),
+        required=False
     )
 
     class Meta:

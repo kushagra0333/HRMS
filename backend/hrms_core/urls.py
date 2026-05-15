@@ -1,9 +1,3 @@
-"""
-URL configuration for hrms_core project.
-
-The `urlpatterns` list routes URLs to views. For more information please see:
-    https://docs.djangoproject.com/en/6.0/topics/http/urls/
-"""
 
 # Importing the admin module to enable the admin interface.
 from django.contrib import admin
@@ -32,6 +26,7 @@ urlpatterns = [
     path('api/', include('employees.urls')),
     path('api/', include('attendance.urls')),
     path('api/', include('leaves.urls')),
+    path('api/', include('tasks.urls')),
     
     # Example route comment: needs cleanup or consolidation into employees.urls
     path('api/auth/register/', include('employees.auth_urls')), 

@@ -8,7 +8,8 @@ export default function Register() {
     password: '',
     email: '',
     first_name: '',
-    department: 'IT'
+    department: 'IT',
+    role: 'employee'
   });
   const [error, setError] = useState('');
   const { register } = useAuth();
@@ -75,6 +76,17 @@ export default function Register() {
                 <option value="HR">HR</option>
                 <option value="Sales">Sales</option>
                 <option value="Marketing">Marketing</option>
+            </select>
+          </div>
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">Join as</label>
+            <select
+              className="w-full p-2 border rounded-lg focus:ring-2 focus:ring-blue-500 outline-none bg-white font-bold text-blue-600"
+              value={formData.role}
+              onChange={(e) => setFormData({...formData, role: e.target.value})}
+            >
+                <option value="employee">Employee / User</option>
+                <option value="admin">System Admin</option>
             </select>
           </div>
           <div>

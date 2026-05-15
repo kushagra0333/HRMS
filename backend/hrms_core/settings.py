@@ -75,6 +75,7 @@ INSTALLED_APPS = [
     'employees',                     # Employee management feature
     'attendance',                    # Attendance tracking feature
     'leaves',                        # Leave management feature
+    'tasks',                         # Task management feature
 ]
 
 # Configuration for Django Rest Framework (DRF)

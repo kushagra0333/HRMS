@@ -1,9 +1,11 @@
 import { NavLink, useNavigate } from "react-router-dom";
-import { LayoutDashboard, Users, CalendarCheck, CalendarDays, LogOut, X } from "lucide-react";
+import { LayoutDashboard, Users, CalendarCheck, CalendarDays, LogOut, X, Briefcase, CheckSquare } from "lucide-react";
 import { useAuth } from "../../context/AuthContext";
 
 const navItems = [
   { label: "Dashboard", path: "/", icon: LayoutDashboard },
+  { label: "Projects", path: "/projects", icon: Briefcase },
+  { label: "Tasks", path: "/tasks", icon: CheckSquare },
   { label: "Employees", path: "/employees", icon: Users },
   { label: "Attendance", path: "/attendance", icon: CalendarCheck },
   { label: "Leaves", path: "/leaves", icon: CalendarDays },
@@ -12,6 +14,12 @@ const navItems = [
 export default function Sidebar({ isOpen, onClose }) {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
+  const isAdmin = user?.role === 'admin';
+
+  const filteredNavItems = navItems.filter(item => {
+    if (item.path === '/employees' && !isAdmin) return false;
+    return true;
+  });
 
   const handleLogout = () => {
       logout();
@@ -38,7 +46,12 @@ export default function Sidebar({ isOpen, onClose }) {
             <div className="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center">
               <span className="text-white font-bold">H</span>
             </div>
-            <h2 className="text-xl font-bold text-gray-800">HRMS Lite</h2>
+            <div>
+                <h2 className="text-xl font-bold text-gray-800 leading-none">HRMS Lite</h2>
+                <span className="text-[10px] font-bold text-blue-600 uppercase tracking-wider">
+                    {isAdmin ? 'Admin Panel' : 'Employee Portal'}
+                </span>
+            </div>
           </div>
           <button onClick={onClose} className="md:hidden text-gray-500 hover:text-gray-700">
             <X className="w-5 h-5" />
@@ -46,7 +59,7 @@ export default function Sidebar({ isOpen, onClose }) {
         </div>
 
         <nav className="flex-1 p-4 space-y-1">
-          {navItems.map((item) => (
+          {filteredNavItems.map((item) => (
             <NavLink
               key={item.path}
               to={item.path}
