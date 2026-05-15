@@ -205,7 +205,8 @@ REACT_BUILD_DIR = BASE_DIR / 'react_build'
 
 # Additional locations of static files (besides those in apps)
 STATICFILES_DIRS = [
-    REACT_BUILD_DIR / 'static', # Where React puts its built static assets (js/css chunks)
+    REACT_BUILD_DIR / 'static',
+    REACT_BUILD_DIR,
 ]
 
 # CORS (Cross-Origin Resource Sharing) settings

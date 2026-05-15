@@ -14,7 +14,7 @@ export default function Leaves() {
 
   const fetchLeaves = async () => {
     try {
-      const response = await api.get("/leaves/");
+      const response = await api.get("leaves/");
       console.log("Leaves Data:", response.data);
       setLeaves(response.data);
     } catch (error) {
@@ -31,7 +31,7 @@ export default function Leaves() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      await api.post("/leaves/", formData);
+      await api.post("leaves/", formData);
       setShowModal(false);
       setFormData({ start_date: "", end_date: "", reason: "" });
       fetchLeaves();
@@ -57,7 +57,7 @@ export default function Leaves() {
       ));
 
       try {
-          await api.patch(`/leaves/${id}/${action}/`);
+          await api.patch(`leaves/${id}/${action}/`);
           // Optional: re-fetch to ensure consistency, but optimistic update makes it feel instant
           fetchLeaves(); 
       } catch (error) {

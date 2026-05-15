@@ -1,8 +1,8 @@
 import axios from 'axios';
 
 const API_URL = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
-  ? `http://${window.location.hostname}:8000/api`
-  : '/api';
+  ? `http://${window.location.hostname}:8000/api/`
+  : '/api/';
 
 const api = axios.create({
   baseURL: API_URL,
@@ -35,8 +35,8 @@ api.interceptors.response.use(
 );
 
 export const endpoints = {
-  employees: '/employees/',
-  attendance: '/attendance/',
+  employees: 'employees/',
+  attendance: 'attendance/',
 };
 
 export default api;

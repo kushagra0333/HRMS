@@ -9,6 +9,7 @@ from django.urls import path, include, re_path
 
 # Import views from the local directory (hrms_core/views.py)
 from . import views
+from django.views.generic import RedirectView
 
 # Import JWT views for handling token generation and refreshing.
 from rest_framework_simplejwt.views import (
@@ -20,6 +21,12 @@ urlpatterns = [
     # Route for the built-in Django admin interface.
     # Accessing /admin/ opens the dashboard to manage models.
     path('admin/', admin.site.urls),
+    
+    # Root static files for React
+    path('manifest.json', RedirectView.as_view(url='/static/manifest.json', permanent=True)),
+    path('favicon.ico', RedirectView.as_view(url='/static/favicon.ico', permanent=True)),
+    path('logo192.png', RedirectView.as_view(url='/static/logo192.png', permanent=True)),
+    path('logo512.png', RedirectView.as_view(url='/static/logo512.png', permanent=True)),
 
     # API routes. 'include' delegates the request to the specific app's urls.py.
     # Any URL starting with 'api/' and matching what's in 'employees.urls' goes there.
@@ -32,16 +39,15 @@ urlpatterns = [
     path('api/auth/register/', include('employees.auth_urls')), 
 
     # Key authentication endpoints:
-    # Login endpoint: POST a username/password, get back an Access and Refresh token.
     path('api/token/', TokenObtainPairView.as_view(), name='token_obtain_pair'),
-    
-    # Refresh endpoint: POST a Refresh token, get back a new Access token.
-    # This allows users to stay logged in without re-entering passwords constantly.
     path('api/token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
 
     # Catch-all route for serving the React Frontend.
-    # re_path(r'^.*$') matches ANY URL that hasn't been matched above.
-    # It sends them to views.index, which serves the React index.html.
-    # This allows React Router to handle the frontend routing (Client-Side Routing).
+    # We use a regex that avoids catching URLs that look like file requests (contain a dot)
+    # or start with api/ or admin/
+    re_path(r'^(?!api|admin|static|.*?\..*?).*$', views.index, name='index'),
+    
+    # Alternatively, just serve the index for everything else, but ensure WhiteNoise
+    # has a chance to serve the static files first.
     re_path(r'^.*$', views.index, name='index'),
 ]

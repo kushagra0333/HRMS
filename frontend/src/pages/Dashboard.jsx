@@ -34,9 +34,9 @@ export default function Dashboard() {
   const fetchDashboardData = async () => {
     try {
       const [projectsRes, tasksRes, employeesRes] = await Promise.all([
-        api.get('/projects/'),
-        api.get('/tasks/'),
-        api.get('/employees/')
+        api.get('projects/'),
+        api.get('tasks/'),
+        api.get('employees/')
       ]);
 
       const tasks = tasksRes.data;

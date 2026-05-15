@@ -23,7 +23,7 @@ export default function TaskDetails() {
 
   const fetchTask = async () => {
     try {
-      const response = await api.get(`/tasks/${id}/`);
+      const response = await api.get(`tasks/${id}/`);
       setTask(response.data);
       setNotes(response.data.completion_notes || '');
     } catch (error) {
@@ -37,7 +37,7 @@ export default function TaskDetails() {
     const updatedChecklist = [...task.checklist];
     updatedChecklist[index].completed = !updatedChecklist[index].completed;
     try {
-      await api.patch(`/tasks/${id}/update_checklist/`, { checklist: updatedChecklist });
+      await api.patch(`tasks/${id}/update_checklist/`, { checklist: updatedChecklist });
       setTask({ ...task, checklist: updatedChecklist });
     } catch (error) {
       console.error('Error updating checklist:', error);
@@ -49,7 +49,7 @@ export default function TaskDetails() {
     if (!newChecklistItem.trim()) return;
     const updatedChecklist = [...task.checklist, { text: newChecklistItem, completed: false }];
     try {
-      await api.patch(`/tasks/${id}/update_checklist/`, { checklist: updatedChecklist });
+      await api.patch(`tasks/${id}/update_checklist/`, { checklist: updatedChecklist });
       setTask({ ...task, checklist: updatedChecklist });
       setNewChecklistItem('');
     } catch (error) {
@@ -59,7 +59,7 @@ export default function TaskDetails() {
 
   const updateStatus = async (newStatus) => {
     try {
-      await api.patch(`/tasks/${id}/update_status/`, { status: newStatus });
+      await api.patch(`tasks/${id}/update_status/`, { status: newStatus });
       setTask({ ...task, status: newStatus });
     } catch (error) {
       console.error('Error updating status:', error);
@@ -69,7 +69,7 @@ export default function TaskDetails() {
   const saveNotes = async () => {
     setSaving(true);
     try {
-      await api.patch(`/tasks/${id}/`, { completion_notes: notes });
+      await api.patch(`tasks/${id}/`, { completion_notes: notes });
       setTask({ ...task, completion_notes: notes });
       alert('Progress saved!');
     } catch (error) {
