@@ -34,6 +34,16 @@ environ.Env.read_env(BASE_DIR / '.env')
 # Explicitly define MONGODB_URL
 MONGODB_URL = os.getenv("MONGODB_URL")
 
+DEPLOYMENT_METADATA = {
+    'platform': 'railway' if os.getenv('RAILWAY_ENVIRONMENT_NAME') else 'local',
+    'environment': os.getenv('RAILWAY_ENVIRONMENT_NAME', 'local'),
+    'public_domain': os.getenv('RAILWAY_PUBLIC_DOMAIN'),
+    'snapshot_id': os.getenv('RAILWAY_SNAPSHOT_ID'),
+    'git_commit_sha': os.getenv('RAILWAY_GIT_COMMIT_SHA'),
+    'git_branch': os.getenv('RAILWAY_GIT_BRANCH'),
+    'git_repo': os.getenv('RAILWAY_GIT_REPO_NAME'),
+}
+
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/6.0/howto/deployment/checklist/
 

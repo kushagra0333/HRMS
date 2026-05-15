@@ -39,6 +39,7 @@ urlpatterns = [
     path('api/auth/register/', include('employees.auth_urls')), 
 
     # Key authentication endpoints:
+    path('api/deploy-info/', views.deploy_info, name='deploy_info'),
     path('api/token/', TokenObtainPairView.as_view(), name='token_obtain_pair'),
     path('api/token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
 
