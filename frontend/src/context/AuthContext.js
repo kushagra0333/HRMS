@@ -23,6 +23,7 @@ export const AuthProvider = ({ children }) => {
     try {
         const response = await api.get('/me/');
         setUser(response.data);
+        return response.data;
     } catch (error) {
         logout();
     } finally {
@@ -38,8 +39,8 @@ export const AuthProvider = ({ children }) => {
     localStorage.setItem('refresh_token', refresh);
     
     api.defaults.headers.common['Authorization'] = `Bearer ${access}`;
-    await fetchUser();
-    return true;
+    const userData = await fetchUser();
+    return userData;
   };
 
   const register = async (userData) => {

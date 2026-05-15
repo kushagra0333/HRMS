@@ -38,12 +38,20 @@ export default function Attendance() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const payload = isAdmin ? formData : { date: formData.date, status: formData.status };
+      // If admin doesn't select an employee, treat it as a self-check-in
+      const payload = (isAdmin && formData.employee) 
+        ? formData 
+        : { date: formData.date, status: formData.status };
+      
       await api.post(endpoints.attendance, payload);
       alert("Attendance marked successfully!");
       fetchData();
     } catch (error) {
-      alert("Failed to mark attendance: " + (error.response?.data?.[0] || error.message));
+      console.error("Attendance Error:", error.response?.data);
+      const errorMsg = error.response?.data 
+        ? (typeof error.response.data === 'string' ? error.response.data : JSON.stringify(error.response.data))
+        : error.message;
+      alert("Failed to mark attendance: " + errorMsg);
     }
   };
 
@@ -146,11 +154,7 @@ export default function Attendance() {
                             <tr><td colSpan="3" className="p-6 text-center">No records found.</td></tr>
                         ) : (
                             attendance.map((record) => {
-                                // Find employee name if possible (backend sends employee ID/slug in simple serializer?)
-                                // The backend serializer "AttendanceSerializer" in step 488 uses valid SlugRelatedField. 
-                                // So record.employee will be the employee_id string (slug).
-                                // We can look up the name from the employees list.
-                                const empName = employees.find(e => e.employee_id === record.employee)?.name || record.employee;
+                                const empName = record.employee_name || record.employee;
                                 
                                 return (
                                     <tr key={record.id} className="hover:bg-gray-50">
