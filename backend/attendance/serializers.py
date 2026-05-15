@@ -12,9 +12,7 @@ class AttendanceSerializer(serializers.ModelSerializer):
         required=False
     )
 
-    employee_name = serializers.ReadOnlyField(source='employee.name')
-    
     class Meta:
         model = Attendance
         # Expose all fields including the computed/related ones.
-        fields = ('id', 'employee', 'employee_name', 'date', 'status')
+        fields = '__all__'

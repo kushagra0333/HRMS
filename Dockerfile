@@ -25,5 +25,5 @@ COPY --from=build-stage /app/frontend/build ./react_build
 RUN python manage.py collectstatic --no-input
 
 # Gunicorn will start the app
-# Use the PORT environment variable provided by the platform (default to 10000)
-CMD gunicorn hrms_core.wsgi:application --bind 0.0.0.0:${PORT:-10000}
+# The bind address 0.0.0.0 is crucial for Docker
+CMD ["gunicorn", "hrms_core.wsgi:application", "--bind", "0.0.0.0:10000"]
