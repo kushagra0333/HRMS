@@ -2,6 +2,7 @@ from django.db import models
 from django.contrib.auth.models import User
 from django.db.models.signals import post_save
 from django.dispatch import receiver
+import re
 
 # The Employee model represents the employee entity in our system.
 # It stores information about each staff member.
@@ -24,6 +25,15 @@ class Employee(models.Model):
     def __str__(self):
         return f"{self.name} ({self.role})"
 
+
+def generate_employee_id(user):
+    username = (user.username or "").strip().upper()
+    normalized_username = re.sub(r"[^A-Z0-9]+", "_", username).strip("_")
+    if normalized_username:
+        return normalized_username
+
+    return f"EMP_{str(user.pk).replace('-', '').upper()[-8:]}"
+
 @receiver(post_save, sender=User)
 def create_user_employee(sender, instance, created, **kwargs):
     if created:
@@ -32,7 +42,7 @@ def create_user_employee(sender, instance, created, **kwargs):
         Employee.objects.update_or_create(
             user=instance,
             defaults={
-                'employee_id': f"EMP{instance.id:04d}",
+                'employee_id': generate_employee_id(instance),
                 'name': instance.username,
                 'email': instance.email,
                 'role': role,

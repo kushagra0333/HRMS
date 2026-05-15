@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import Employee
+from .models import Employee, generate_employee_id
 from django.contrib.auth.models import User
 
 # Serializers convert complex data (like model instances) into native Python data types 
@@ -54,7 +54,7 @@ class RegisterSerializer(serializers.ModelSerializer):
         Employee.objects.update_or_create(
             user=user,
             defaults={
-                'employee_id': validated_data.get('username').upper(), 
+                'employee_id': generate_employee_id(user),
                 'name': validated_data['first_name'],
                 'email': validated_data['email'],
                 'department': validated_data['department'],
