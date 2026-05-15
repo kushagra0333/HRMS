@@ -20,6 +20,7 @@ import environ
 
 # os usage is minimal here but sometimes needed for system-level operations.
 import os
+from pymongo import MongoClient
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 # BASE_DIR is the root folder of your project (where manage.py lives).
@@ -30,6 +31,10 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 env = environ.Env()
 # Read the .env file located at the BASE_DIR.
 environ.Env.read_env(BASE_DIR / '.env')
+
+# Explicitly define MONGODB_URL and initialize MongoClient
+MONGODB_URL = os.getenv("MONGODB_URL")
+client = MongoClient(MONGODB_URL)
 
 
 # Quick-start development settings - unsuitable for production
@@ -147,8 +152,8 @@ DATABASES = {
         'NAME': 'hrms_db',              # Name of the database to create/connect to
         'ENFORCE_SCHEMA': False,        # MongoDB is schema-less, so we disable strict schema enforcement
         'CLIENT': {
-            # Connection string for MongoDB (read from env or default to localhost)
-            'host': env('MONGODB_URL', default='mongodb://localhost:27017/hrms_db')
+            # Connection string for MongoDB
+            'host': MONGODB_URL
         }
     }
 }
