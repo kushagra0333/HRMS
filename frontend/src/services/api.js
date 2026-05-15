@@ -1,8 +1,12 @@
 import axios from 'axios';
 
-const API_URL = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
-  ? `http://${window.location.hostname}:8000/api/`
-  : '/api/';
+const API_URL = process.env.REACT_APP_API_URL || 
+  (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' || window.location.hostname.startsWith('192.168.')
+    ? `http://${window.location.hostname}:8000/api/`
+    : '/api/');
+
+console.log('API Base URL:', API_URL);
+
 
 const api = axios.create({
   baseURL: API_URL,

@@ -20,7 +20,6 @@ import environ
 
 # os usage is minimal here but sometimes needed for system-level operations.
 import os
-from pymongo import MongoClient
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 # BASE_DIR is the root folder of your project (where manage.py lives).
@@ -32,17 +31,16 @@ env = environ.Env()
 # Read the .env file located at the BASE_DIR.
 environ.Env.read_env(BASE_DIR / '.env')
 
-# Explicitly define MONGODB_URL and initialize MongoClient
+# Explicitly define MONGODB_URL
 MONGODB_URL = os.getenv("MONGODB_URL")
-client = MongoClient(MONGODB_URL)
-
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/6.0/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
 # This key is used for cryptographic signing. It should be unique and kept secret.
-SECRET_KEY = 'django-insecure-r4dp%tuf$b*)=icbxtv_a91!%az7^jr!k8gy-&pl%c8@9faiml'
+SECRET_KEY = env.str('SECRET_KEY', default='django-insecure-r4dp%tuf$b*)=icbxtv_a91!%az7^jr!k8gy-&pl%c8@9faiml')
+
 
 # SECURITY WARNING: don't run with debug turned on in production!
 # When DEBUG is True, Django shows detailed error pages. This is great for development
@@ -53,11 +51,18 @@ DEBUG = env.bool('DEBUG', default=False)
 # This is a security measure to prevent HTTP Host header attacks.
 ALLOWED_HOSTS = env.list('ALLOWED_HOSTS', default=['*'])
 
-# Render.com specific setting. When deploying to Render, the hostname is provided in an environment variable.
-# We add it to ALLOWED_HOSTS so the app works on Render.
+# Trust the X-Forwarded-Proto header for HTTPS detection (needed for Railway/Render)
+SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
+
+# Add platform-specific hostnames if available
 RENDER_EXTERNAL_HOSTNAME = os.environ.get('RENDER_EXTERNAL_HOSTNAME')
+RAILWAY_STATIC_URL = os.environ.get('RAILWAY_STATIC_URL')
+
 if RENDER_EXTERNAL_HOSTNAME:
     ALLOWED_HOSTS.append(RENDER_EXTERNAL_HOSTNAME)
+if RAILWAY_STATIC_URL:
+    clean_railway_url = RAILWAY_STATIC_URL.replace('https://', '').replace('http://', '').strip('/')
+    ALLOWED_HOSTS.append(clean_railway_url)
 
 
 # Application definition
@@ -213,6 +218,18 @@ STATICFILES_DIRS = [
 # If True, allows ANY site to make requests to your API.
 # In production, this should be restricted to your frontend domain.
 CORS_ALLOW_ALL_ORIGINS = True
+
+# CSRF Trusted Origins for production
+CSRF_TRUSTED_ORIGINS = [
+    'https://*.railway.app',
+    'https://*.render.com'
+]
+if RENDER_EXTERNAL_HOSTNAME:
+    CSRF_TRUSTED_ORIGINS.append(f'https://{RENDER_EXTERNAL_HOSTNAME}')
+if RAILWAY_STATIC_URL:
+    clean_railway_url = RAILWAY_STATIC_URL.replace('https://', '').replace('http://', '').strip('/')
+    CSRF_TRUSTED_ORIGINS.append(f'https://{clean_railway_url}')
+
 
 from corsheaders.defaults import default_headers
 

@@ -17,6 +17,9 @@ RUN pip install --no-cache-dir -r requirements.txt
 # Copy backend code
 COPY backend/ ./
 
+# Run the djongo patch to ensure compatibility with Django and MongoDB
+RUN python patch_djongo.py
+
 # Copy React build artifacts from Stage 1
 # Ensure the destination matches where Django looks for static files/templates
 COPY --from=build-stage /app/frontend/build ./react_build
@@ -24,4 +27,4 @@ COPY --from=build-stage /app/frontend/build ./react_build
 # Run collectstatic to prepare files for WhiteNoise
 RUN python manage.py collectstatic --no-input
 
-CMD ["sh", "-c", "gunicorn hrms_core.wsgi:application --bind 0.0.0.0:$PORT"]
+CMD ["sh", "-c", "gunicorn hrms_core.wsgi:application --bind 0.0.0.0:$PORT --access-logfile - --log-level info"]
